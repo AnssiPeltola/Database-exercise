@@ -15,7 +15,7 @@ namespace SQLite
     {
         static void Main()
         {   
-            //Luodaan uusi tietokanta yhteys
+            //Luodaan uusi tietokanta yhteys. Tekee lemmikit.db tämän projektin juureen, jos sitä ei vielä ole.
             using(var connection = new SqliteConnection("Data Source=lemmikit.db"))
             {
                 connection.Open();
@@ -35,8 +35,8 @@ namespace SQLite
                             string? ownerName = Console.ReadLine();
 
                             Console.WriteLine("Anna omistajan puhelinnumero:");
-                            string? strOwnerPhonenumber = Console.ReadLine();
-                            int ownerPhonenumber = Convert.ToInt32(strOwnerPhonenumber);
+                            string? ownerPhonenumber = Console.ReadLine();
+                            // int ownerPhonenumber = Convert.ToInt32(strOwnerPhonenumber);
                             
                             AddOwner(connection, ownerName, ownerPhonenumber);
                             break;
@@ -55,6 +55,7 @@ namespace SQLite
                             break;
 
                         case "3": // Päivittää omistajan puhelinnumeron
+                        
                             break;
 
                         case "4": // Etsi lemmikin nimi omistajan puhelinnumeron perusteella
@@ -80,7 +81,7 @@ namespace SQLite
             createTableOmistajat.CommandText = @"CREATE TABLE IF NOT EXISTS Omistajat (
                 id INTEGER PRIMARY KEY,
                 nimi TEXT NOT NULL,
-                puhnum INTEGER NOT NULL)";
+                puhnum TEXT NOT NULL)";
             createTableOmistajat.ExecuteNonQuery();
 
             //Luodaan taulu Tuotteet
@@ -96,7 +97,7 @@ namespace SQLite
         }
 
         // Lisätään omistaja tietokantaan
-        static void AddOwner(SqliteConnection connection, string ownerName, int ownerPhonenumber)
+        static void AddOwner(SqliteConnection connection, string ownerName, string ownerPhonenumber)
         {
             var insertCmd = connection.CreateCommand();
             insertCmd.CommandText = "INSERT INTO Omistajat (nimi, puhnum) VALUES ($nimi, $puhnum)";
