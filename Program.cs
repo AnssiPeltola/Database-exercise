@@ -6,7 +6,7 @@ namespace SQLite
     {
         static void Main()
         {
-            //Luodaan uusi tietokanta yhteys. Tekee lemmikit.db tämän projektin juureen, jos sitä ei vielä ole.
+            // Luodaan uusi tietokanta yhteys. Tekee lemmikit.db tämän projektin juureen, jos sitä ei vielä ole.
             using (var connection = new SqliteConnection("Data Source=lemmikit.db"))
             {
                 connection.Open();
@@ -16,7 +16,7 @@ namespace SQLite
 
                 while (true)
                 {
-                    //Komentorivi käyttöliittymä
+                    // Komentorivi käyttöliittymä
                     Console.WriteLine(
                         "Mitä haluat tehdä? (1) Lisää omistaja (2) Lisää lemmikki (3) Päivitä omistajan puhelinnumero (4) Etsi lemmikin nimi omistajan puhelinnumeron perusteella (5) Lopeta"
                     );
@@ -30,7 +30,6 @@ namespace SQLite
 
                             Console.WriteLine("Anna omistajan puhelinnumero:");
                             string? ownerPhonenumber = Console.ReadLine();
-                            // int ownerPhonenumber = Convert.ToInt32(strOwnerPhonenumber);
 
                             AddOwner(connection, ownerName, ownerPhonenumber);
                             break;
@@ -80,7 +79,7 @@ namespace SQLite
         // Luo tietokantataulut tarvittaessa
         static void CreateTables(SqliteConnection connection)
         {
-            //Luodaan taulu Asiakkaat
+            // Luodaan taulu Asiakkaat
             var createTableOmistajat = connection.CreateCommand();
             createTableOmistajat.CommandText =
                 @"CREATE TABLE IF NOT EXISTS Omistajat (
@@ -89,7 +88,7 @@ namespace SQLite
                 puhnum TEXT NOT NULL)";
             createTableOmistajat.ExecuteNonQuery();
 
-            //Luodaan taulu Tuotteet
+            // Luodaan taulu Tuotteet
             var createTableCmd2 = connection.CreateCommand();
             createTableCmd2.CommandText =
                 @"CREATE TABLE IF NOT EXISTS Lemmikit (
