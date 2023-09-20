@@ -3,12 +3,6 @@ using System.Data.Common;
 using System.Reflection.Metadata.Ecma335;
 using Microsoft.Data.Sqlite;
 
-// -Lisää kantaan lemmikkejä(id, nimi, laji, omistajan_id)
-
-// -Päivittää omistajan puhelinnumeron
-
-// -Etsii lemminkin nimen perusteella omistajan puhelinnumeron
-
 namespace SQLite
 {
     class Program
@@ -55,10 +49,20 @@ namespace SQLite
                             break;
 
                         case "3": // Päivittää omistajan puhelinnumeron
-                        
+                            Console.WriteLine("Anna puhelinnumerosi, jonka haluat vaihtaa:");
+                            string? oldPhonenumber = Console.ReadLine();
+                            
+                            Console.WriteLine("Anna uusi puhelinnumero:");
+                            string? newPhonenumber = Console.ReadLine();
+
+                            UpdatePhonenumber(connection, oldPhonenumber, newPhonenumber);
                             break;
 
-                        case "4": // Etsi lemmikin nimi omistajan puhelinnumeron perusteella
+                        case "4": // Etsii lemminkin nimen perusteella omistajan puhelinnumeron
+                            Console.WriteLine("Anna lemmikin nimi:");
+                            string? petName2 = Console.ReadLine();
+
+                            PrintOwnerPhonenumberByPetName(connection, petName2);
                             break;
 
                         case "5": // Lopeta
@@ -137,6 +141,47 @@ namespace SQLite
             }
 
             return ownerId;
+        }
+
+        // Funktiolle annetan parametriksi vanha ja uusi puhelinnumero. Kaikki joiden puhelinnumero on sama kuin oldPhonenumber päivitetään newPhonenumberiksi
+        static void  UpdatePhonenumber(SqliteConnection connection, string oldPhonenumber, string newPhonenumber)
+        {
+            var updateCmd = connection.CreateCommand();
+
+            updateCmd.CommandText = @"UPDATE Omistajat
+            SET puhnum = $newPhonenumber
+            WHERE puhnum = $oldPhonenumber";
+            updateCmd.Parameters.AddWithValue("$newPhonenumber", newPhonenumber);
+            updateCmd.Parameters.AddWithValue("$oldPhonenumber",oldPhonenumber);
+            updateCmd.ExecuteNonQuery();
+        }
+
+        static void PrintOwnerPhonenumberByPetName(SqliteConnection connection, string petName)
+        {
+            string petName2 = "";
+
+            // Haetaan lemmikin nimi
+            var selectCmd = connection.CreateCommand();
+            selectCmd.CommandText = "SELECT nimi FROM Lemmikit WHERE nimi = $petName";
+            selectCmd.Parameters.AddWithValue("$petName", petName);
+            var result = selectCmd.ExecuteReader();
+
+            result.Read();
+            petName2 = result.GetString(0);
+
+            // Haetaan lemmikin omitajan puhelinnumero
+            var selectCmd2 = connection.CreateCommand();
+            selectCmd2.CommandText = @"SELECT Omistajat.puhnum
+            FROM Omistajat, Lemmikit
+            WHERE Omistajat.id = Lemmikit.omistaja_id AND Lemmikit.nimi = $petName2";
+            selectCmd2.Parameters.AddWithValue("$petName2", petName2);
+            var result2 = selectCmd2.ExecuteReader();
+
+            while(result2.Read())
+            {
+                Console.WriteLine(result2.GetString(0));
+            }
+
         }
     }
 }
